@@ -1,8 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useReducer, useCallback, useState} from 'react';
+import UnlockButton from './component/ConnectWalletButton';
 import BN from 'bignumber.js'
-
 import { Navbar, Nav, Container, Row, Col, Modal, InputGroup, FormControl } from 'react-bootstrap';
-import { useState} from 'react';
 import BigNumber from 'bignumber.js';
 import axios from 'axios'
 import * as API from './store/api';
@@ -11,6 +10,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const App = () => {
+
   useEffect(() => {
     AOS.init({
       duration : 1000,
@@ -359,11 +359,9 @@ const App = () => {
             </Row>
             <Row>
               <Col sm="4">
-                <div style = {{height: "40px"}}onClick={connect}>
-                  Connect
-                </div>
               </Col>
               <Col sm="4">
+                <UnlockButton />
               </Col>
               <Col sm="4">
               </Col>

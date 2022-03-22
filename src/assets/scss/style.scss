@@ -61,7 +61,7 @@ body{
 }
 .custom-navbar{
   background: transparent;
-  z-index: 100;
+  z-index: 2;
 }
 .custom-navbar .navbar-brand{
   max-width: 100px;
@@ -85,7 +85,7 @@ body{
   padding: 0 25px;
 }
 .hero-section{
-  z-index: 999;
+  z-index: 4;
   position: relative;
 }
 /*.hero-section .hero1{
@@ -109,7 +109,7 @@ body{
 .cta-section {
     padding:80px 0 80px 0;
     position: relative;
-    z-index: 99999;
+    z-index: 5;
 }
 .cta-section h3 {
     background: #000;
@@ -142,7 +142,7 @@ body{
 }
 .shield-section{
   padding: 80px 0;
-  z-index: 9999;
+  z-index: 4;
   position: relative;
 }
 .content-section{
@@ -153,7 +153,7 @@ body{
   border-radius: 50px;
   background-color: #da8b0e;
   position: relative;
-  z-index: 9999;
+  z-index: 4;
 }
 .content-section p{
   font-weight: 600;
@@ -174,7 +174,7 @@ body{
   max-width: 700px;
   margin: 0 auto;
   position: relative;
-  z-index: 9999;
+  z-index: 4;
 }
 .token-section h3{
   font-weight: 700;
@@ -263,7 +263,7 @@ body{
 } */
 .footer-section{
   padding: 15px 0;
-  z-index: 999;
+  z-index: 3;
   position: relative;
 }
 .footer-section p{
@@ -329,7 +329,7 @@ body{
   }
   .shield-section{
     padding:40px 0; 
-    z-index: 9999;
+    z-index: 4;
   }
   .shield-section .shield-area img{
     max-width: 150px;
@@ -388,7 +388,7 @@ body{
   }
   .shield-section{
     padding:40px 0; 
-    z-index: 9999;
+    z-index: 4;
   }
   .shield-section .shield-area::before{
     content: none;
@@ -441,7 +441,7 @@ body{
 }
 
 .dashboard-modal {
-  z-index: 100000;
+  z-index: 99;
   .modal-content {
     background: #FFA400;
     color: #4E0000;
