@@ -11,93 +11,104 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const App = () => {
-		useEffect(() => {
-				AOS.init({
-						duration : 1000,
-						offset: 10
-				})
-				getTotalDividendsDistributed();
-				fetchCurrencyData();
-		});
+  useEffect(() => {
+    AOS.init({
+      duration : 1000,
+      offset: 10
+    })
+    getTotalDividendsDistributed();
+    fetchCurrencyData();
+  });
 	
-		const [visibleDashboard, setVisibleDashboard] = useState(false);
-		const [validAddress, setValidAddress] = useState(true);
-		const [balance, setBalance] = useState('0');
-		const [ethPrice, setEthPrice] = useState(0);
-		const [totalDividendsDistributed, setTotalDividendsDistributed] = useState('0');
-		const [totalDividendsDistributedUSD, setTotalDividendsDistributedUSD] = useState('0');
-		const [userDividendsDistributed, setUserDividendsDistributed] = useState('0');
-		const [userDividendsDistributedUSD, setUserDividendsDistributedUSD] = useState('0');
-		const [userDividendsDistributedAt, setUserDividendsDistributedAt] = useState('Never');
+  const [visibleDashboard, setVisibleDashboard] = useState(false);
+  const [validAddress, setValidAddress] = useState(true);
+  const [balance, setBalance] = useState('0');
+  const [ethPrice, setEthPrice] = useState(0);
+  const [totalDividendsDistributed, setTotalDividendsDistributed] = useState('0');
+  const [totalDividendsDistributedUSD, setTotalDividendsDistributedUSD] = useState('0');
+  const [userDividendsDistributed, setUserDividendsDistributed] = useState('0');
+  const [userDividendsDistributedUSD, setUserDividendsDistributedUSD] = useState('0');
+  const [userDividendsDistributedAt, setUserDividendsDistributedAt] = useState('Never');
 		
-		useEffect(()=> {
-			setUserDividendsDistributedUSD(BN(parseFloat(userDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
-			setTotalDividendsDistributedUSD(BN(parseFloat(totalDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
-		}, [userDividendsDistributed, totalDividendsDistributed, ethPrice])
+  useEffect(()=> {
+    setUserDividendsDistributedUSD(BN(parseFloat(userDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
+    setTotalDividendsDistributedUSD(BN(parseFloat(totalDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
+  }, [userDividendsDistributed, totalDividendsDistributed, ethPrice])
 
-		
-		const openDashboard = () => {
-				setBalance(0);
-				setUserDividendsDistributed(0);
-				setUserDividendsDistributedAt('Never');
-				setVisibleDashboard(true);
-		}
-		const fetchCurrencyData = () => {
-			axios
-			.get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
-			.then(response => {
-				setEthPrice(response.data.weth.usd)
-			})
-			.catch(err => console.log(err))
-		}
+  
+  const openDashboard = () => {
+    setBalance(0);
+    setUserDividendsDistributed(0);
+    setUserDividendsDistributedAt('Never');
+    setVisibleDashboard(true);
+  }
 
-		const closeDashboard = () => {
-				setVisibleDashboard(false);
-		}
+  const fetchCurrencyData = () => {
+    axios
+    .get('https://api.coingecko.com/api/v3/simple/price?ids=weth&vs_currencies=usd')
+    .then(response => {
+      setEthPrice(response.data.weth.usd)
+    })
+    .catch(err => console.log(err))
+  }
 
-		const handleChangeAddress = (e) => {
-				let address = e.target.value;
+  const closeDashboard = () => {
+    setVisibleDashboard(false);
+  }
 
-				if (API.isAddress(address)) {
-						setValidAddress(true);
-						getBalance(address);            
-						getUserDividendsDistributed(address);
-				}
-				else {
-						setValidAddress(false);
-				}
-		}
+  const handleChangeAddress = (e) => {
+    let address = e.target.value;
 
-		const getBalance = async (address) => {
-				let result = await API.balanceOf(address);
-				let tokenBalance = BigNumber(API.WeiToEth(result));
-				setBalance(tokenBalance.decimalPlaces(3).toString());
-		}
+    if (API.isAddress(address)) {
+      setValidAddress(true);
+      getBalance(address);            
+      getUserDividendsDistributed(address);
+    }
+    else {
+      setValidAddress(false);
+    }
+  }
 
-		const getTotalDividendsDistributed = async () => {
-				let result = await API.getTotalDividendsDistributed();
-				let tokenBalance = BigNumber(API.WeiToEth(result));
-				setTotalDividendsDistributed(tokenBalance.decimalPlaces(3).toString());
-		}
+  const getBalance = async (address) => {
+    let result = await API.balanceOf(address);
+    let tokenBalance = BigNumber(API.WeiToEth(result));
+    setBalance(tokenBalance.decimalPlaces(3).toString());
+  }
 
-		const getUserDividendsDistributed = async (address) => {
-				let result = await API.getUserDividendsDistributed(address);
-				let tokenBalance = BigNumber(API.WeiToEth(result[4]));
-				console.log("token balance", result)
-				setUserDividendsDistributed(tokenBalance.decimalPlaces(3).toString());
+  const getTotalDividendsDistributed = async () => {
+    let result = await API.getTotalDividendsDistributed();
+    let tokenBalance = BigNumber(API.WeiToEth(result));
+    setTotalDividendsDistributed(tokenBalance.decimalPlaces(3).toString());
+  }
 
-				let timestamp = result[5];
-				if (timestamp && timestamp != '0') {
-						var date = new Date(timestamp * 1000).toLocaleDateString("en-US");
-						var time = new Date(timestamp * 1000).toLocaleTimeString("en-US");
-						// Will display time in 10:30:23 format
-						var formattedTime = date + ' ' + time;
-						setUserDividendsDistributedAt(formattedTime);
-				}
-				else {
-						setUserDividendsDistributedAt('Never');    
-				}
-		}
+  const getUserDividendsDistributed = async (address) => {
+    let result = await API.getUserDividendsDistributed(address);
+    let totalShare = BigNumber(API.WeiToEth(result[0].split(" ")[2]));
+    let totalEth = BigNumber(API.WeiToEth(result[1].split(" ")[2]));
+    let userShare = BigNumber(API.WeiToEth(result[2].split(" ")[2]));
+    let tokenBalance = totalEth.times(userShare).div(totalShare);
+    setUserDividendsDistributed(tokenBalance.decimalPlaces(5).toString());
+
+    const lastBlock = await API.getLatestBlockNumber();
+    
+    axios
+    .get(`https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=0x1684c51c40bc9c48f0a391258d6c8898841025cf&address=${address}&page=1&offset=100&startblock=0&endblock=${lastBlock}&sort=asc&apikey=P7WXT8SZ3JF5CBT9KX7KQSTGGPDE1BJ1W1`)
+    .then(response => {
+      if (response?.data?.result?.length) {
+          let timestamp = response?.data?.result[0].timeStamp;
+          var date = new Date(timestamp * 1000).toLocaleDateString("en-US");
+          var time = new Date(timestamp * 1000).toLocaleTimeString("en-US");
+          // Will display time in 10:30:23 format
+          var formattedTime = date + ' ' + time;
+          setUserDividendsDistributedAt(formattedTime);
+      }
+      else {
+          setUserDividendsDistributedAt('Never');    
+      }
+      // setEthPrice(response.data.weth.usd)
+    })
+    .catch(err => console.log(err))
+  }
 
 		return (
 				<>

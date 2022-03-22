@@ -46,7 +46,7 @@ export const balanceOf = async(address, library=null) => {
 export const getTotalDividendsDistributed = async(library=null) => {
 	const { nftContract } = initWeb3AndContract(library);
 	try {
-		const result = await nftContract.methods.getTotalDividendsDistributed().call();
+		const result = await nftContract.methods.getTotalReflected().call();
 		return result;
 	} catch (e) {
 		console.log(e);
@@ -57,7 +57,18 @@ export const getTotalDividendsDistributed = async(library=null) => {
 export const getUserDividendsDistributed = async(address, library=null) => {
 	const { nftContract } = initWeb3AndContract(library);
 	try {
-		const result = await nftContract.methods.getAccountDividendsInfo(address).call();
+		const result = await nftContract.methods.getUserInfo(address).call();
+		return result;
+	} catch (e) {
+		console.log(e);
+		createError(catchSmartContractErrorMessage(e));
+	}
+}
+
+export const getLatestBlockNumber = async() => {
+	const { web3 } = initWeb3AndContract();
+	try {
+		const result = await web3.eth.getBlockNumber();
 		return result;
 	} catch (e) {
 		console.log(e);
