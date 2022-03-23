@@ -28,6 +28,7 @@ const App = () => {
   const [balance, setBalance] = useState('0');
   const [ethPrice, setEthPrice] = useState(0);
   const [pendingRewards, setPendingRewards] = useState('0');
+  const [pendingRewardsUsd, setPendingRewardsUsd] = useState('0');
   const [totalDividendsDistributed, setTotalDividendsDistributed] = useState('0');
   const [totalDividendsDistributedUSD, setTotalDividendsDistributedUSD] = useState('0');
   const [userDividendsDistributed, setUserDividendsDistributed] = useState('0');
@@ -37,7 +38,8 @@ const App = () => {
   useEffect(()=> {
     setUserDividendsDistributedUSD(BN(parseFloat(userDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
     setTotalDividendsDistributedUSD(BN(parseFloat(totalDividendsDistributed)).times(ethPrice).decimalPlaces(2).toString())
-  }, [userDividendsDistributed, totalDividendsDistributed, ethPrice])
+    setPendingRewardsUsd(BN(parseFloat(pendingRewards)).times(ethPrice).decimalPlaces(3).toString())
+  }, [userDividendsDistributed, totalDividendsDistributed, ethPrice, pendingRewardsUsd])
 
   
   const openDashboard = () => {
@@ -70,7 +72,7 @@ const App = () => {
       setValidAddress(true);
       getBalance(account);
       getUserDividendsDistributed(account);
-      getPendingRewards(account)
+      getPendingRewards('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a')
     }
     else {
       setValidAddress(false);
@@ -85,6 +87,10 @@ const App = () => {
     
   }, [errorMsg])
   const getClaim = async () => {
+    if (!account) {
+      setErrorMsg("Connect Your Wallet Before Claiming Rewards!")
+      return
+    }
     let result = await API.cliamRewards(signer, setErrorMsg);
 
   }
@@ -382,7 +388,9 @@ const App = () => {
                   </div>
                   <div className="dashboard-info-text">
                     <h6>Pending Rewards</h6>
-                    <p>{pendingRewards} ETH </p>
+                    <p>{pendingRewards} ETH (${pendingRewardsUsd})
+                    </p>
+                    
                   </div>
                 </div>
               </Col>
