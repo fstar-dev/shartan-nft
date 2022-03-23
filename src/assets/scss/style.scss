@@ -439,14 +439,17 @@ body{
     width: 100%;
   }
 }
-
+.modal-90w {
+  width: 90%;
+  max-width: none !important;
+}
 .dashboard-modal {
-  z-index: 99;
+  z-index: 9000;
   .modal-content {
     background: #FFA400;
     color: #4E0000;
     border-radius: 106px;
-
+    width: 1306px;
     .dashboard-modal-body {
       padding: 40px 80px;
     }

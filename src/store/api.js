@@ -64,6 +64,29 @@ export const getUserDividendsDistributed = async(address, library=null) => {
 		createError(catchSmartContractErrorMessage(e));
 	}
 }
+export const cliamRewards = async(address,  setShow, library=null) => {
+	const { nftContract } = initWeb3AndContract(library);
+	try {
+		const result = await nftContract.methods.claimPendingRewards().send({from: address});
+		console.log("dcddcdcdc")
+		return result;
+	} catch (e) {
+		console.log(e);
+		setShow(true)
+		createError(catchSmartContractErrorMessage(e));
+	}
+}
+
+export const getPendingRewards = async(address, library=null) => {
+	const { nftContract } = initWeb3AndContract(library);
+	try {
+		const result = await nftContract.methods.getUserUnpaidEarnings(address).call();
+		return result;
+	} catch (e) {
+		console.log(e);
+		createError(catchSmartContractErrorMessage(e));
+	}
+}
 
 export const getLatestBlockNumber = async() => {
 	const { web3 } = initWeb3AndContract();

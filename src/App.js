@@ -1,15 +1,18 @@
 import React, {useEffect, useReducer, useCallback, useState} from 'react';
 import UnlockButton from './component/ConnectWalletButton';
 import BN from 'bignumber.js'
-import { Navbar, Nav, Container, Row, Col, Modal, InputGroup, FormControl } from 'react-bootstrap';
+import { Navbar, Nav, Container, Row, Col, Modal, InputGroup, FormControl, Button, Toast } from 'react-bootstrap';
 import BigNumber from 'bignumber.js';
 import axios from 'axios'
 import * as API from './store/api';
+import { useWeb3React } from '@web3-react/core'
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const App = () => {
+  const { account, activate, deactivate } = useWeb3React()
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     AOS.init({
@@ -24,6 +27,7 @@ const App = () => {
   const [validAddress, setValidAddress] = useState(true);
   const [balance, setBalance] = useState('0');
   const [ethPrice, setEthPrice] = useState(0);
+  const [pendingRewards, setPendingRewards] = useState('0');
   const [totalDividendsDistributed, setTotalDividendsDistributed] = useState('0');
   const [totalDividendsDistributedUSD, setTotalDividendsDistributedUSD] = useState('0');
   const [userDividendsDistributed, setUserDividendsDistributed] = useState('0');
@@ -39,7 +43,10 @@ const App = () => {
   const openDashboard = () => {
     setBalance(0);
     setUserDividendsDistributed(0);
+    setTotalDividendsDistributed(0);
+    setPendingRewards(0);
     setUserDividendsDistributedAt('Never');
+
     setVisibleDashboard(true);
   }
 
@@ -56,19 +63,29 @@ const App = () => {
     setVisibleDashboard(false);
   }
 
-  const handleChangeAddress = (e) => {
-    let address = e.target.value;
+  useEffect(()=>{
+    console.log('account = ', account)
 
-    if (API.isAddress(address)) {
+    if (API.isAddress(account)) {
+      console.log("bbbbbbbb")
       setValidAddress(true);
-      getBalance(address);            
-      getUserDividendsDistributed(address);
+      getBalance('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a');            
+      getUserDividendsDistributed('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a');
+      getPendingRewards('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a')
     }
     else {
       setValidAddress(false);
     }
-  }
+  }, [account])
 
+  const getClaim = async () => {
+    let result = await API.cliamRewards(account, setShow);
+
+  }
+  const buyShartan = () => {
+    console.log("dddddddd")
+    window.open('https://app.uniswap.org/#/swap?inputCurrency=0x1684c51c40bc9c48f0a391258d6c8898841025cf');
+  }
   const getBalance = async (address) => {
     let result = await API.balanceOf(address);
     let tokenBalance = BigNumber(API.WeiToEth(result));
@@ -110,6 +127,12 @@ const App = () => {
     .catch(err => console.log(err))
   }
 
+  const getPendingRewards = async (address) => {
+    let result = await API.getPendingRewards(address);
+    let tokenBalance = BigNumber(API.WeiToEth(result));
+    setPendingRewards(tokenBalance.decimalPlaces(3).toString());
+  }  
+
 		return (
 				<>
           <div className="theme-parent">
@@ -117,7 +140,7 @@ const App = () => {
             <Navbar expand="lg" className="custom-navbar">
               <Container className="align-items-start">
                 <Navbar.Brand href="">
-                  <img src={process.env.PUBLIC_URL + '/images/slogo.png'} />
+                  <img src={process.env.PUBLIC_URL + '/images/slogo.png'} style={{zIndex: 10}}/>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 
@@ -241,7 +264,7 @@ const App = () => {
             </div>
           </div>
 				</div>
-				<Modal size="lg" show={visibleDashboard} onHide={closeDashboard} centered className="dashboard-modal">
+				<Modal dialogClassName="modal-90w" show={visibleDashboard}  onHide={closeDashboard} centered className="dashboard-modal">
           <Modal.Body className="dashboard-modal-body">
             <InputGroup size="lg" className="address-input-group mb-4 rounded-pill">
               <InputGroup.Text id="address-label">
@@ -288,33 +311,34 @@ const App = () => {
                   </g>
                 </svg>
               </InputGroup.Text>
-                <FormControl
-                  placeholder="Paste Your Address Here"
+              <FormControl
+                  placeholder="Pleas Connect Wallet"
                   aria-label="address"
                   aria-describedby="address-label"
-                  onChange={(e)=>handleChangeAddress(e)}
-                />                        
-            </InputGroup>        
-            <div className={`alert alert-danger validate-address ${validAddress?'invisible':''}`}>Please input valid address.</div>            
+                  value={account}
+                  disabled="true"
+
+                />                                   
+            </InputGroup>
             <h5 className="text-center mb-4">SHARTAN Dashboard</h5>
             <Row>
               <Col sm="4">
-                  <div className="dashboard-info-section text-center">
-                      <div className="dashboard-info-image mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="82.833" height="73.715" viewBox="0 0 82.833 73.715">
-                              <g id="your_holdings" data-name="your holdings" transform="translate(0)">
-                                  <g id="dollar" transform="translate(49.123 0)">
-                                      <path id="Path_14" data-name="Path 14" d="M16.855,0A16.855,16.855,0,1,0,33.71,16.855,16.9,16.9,0,0,0,16.855,0Zm0,15.169a5.972,5.972,0,0,1,5.9,5.9,5.812,5.812,0,0,1-4.214,5.562v2.023H15.169V26.631a5.972,5.972,0,0,1-4.214-5.562h3.371a2.528,2.528,0,0,0,5.056,0,2.592,2.592,0,0,0-2.528-2.528,5.972,5.972,0,0,1-5.9-5.9,5.812,5.812,0,0,1,4.214-5.562V5.056H18.54V7.079a5.972,5.972,0,0,1,4.214,5.562H19.383a2.528,2.528,0,1,0-5.056,0A2.592,2.592,0,0,0,16.855,15.169Z" fill="#4e0000"/>
-                                  </g>
-                                  <path id="Path_15" data-name="Path 15" d="M82.186,211.271c-4.9.3-11.337,5.2-17.548,8.008-7.613,3.443-19.464.671-19.466.671,1.827-.853,9.257-2.623,10.754-3.284,7.953-3.5,7.278-10.791,3.49-10.73-5,.08-7.941,1.313-17.927,2.674-7.569,1.03-16.52.653-20.813,2.293C14.614,213.218,4.853,228.79,4.853,228.79l15.095,14.627s9.343-9.2,13.89-9.2c10.359,0,10.778-.139,20.4-.658,4.091-.223,4.945-.387,7.286-1.18,12.469-4.216,25.857-15.442,26.1-16.791C88.194,212.458,84.772,211.11,82.186,211.271Z" transform="translate(-4.853 -169.702)" fill="#4e0000"/>
-                              </g>
-                          </svg>
-                      </div>
-                      <div className="dashboard-info-text">
-                          <h6>Your Holdings</h6>
-                          <p>{balance} SHARTAN</p>
-                      </div>
+                <div className="dashboard-info-section text-center">
+                  <div className="dashboard-info-image mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="82.833" height="73.715" viewBox="0 0 82.833 73.715">
+                      <g id="your_holdings" data-name="your holdings" transform="translate(0)">
+                        <g id="dollar" transform="translate(49.123 0)">
+                          <path id="Path_14" data-name="Path 14" d="M16.855,0A16.855,16.855,0,1,0,33.71,16.855,16.9,16.9,0,0,0,16.855,0Zm0,15.169a5.972,5.972,0,0,1,5.9,5.9,5.812,5.812,0,0,1-4.214,5.562v2.023H15.169V26.631a5.972,5.972,0,0,1-4.214-5.562h3.371a2.528,2.528,0,0,0,5.056,0,2.592,2.592,0,0,0-2.528-2.528,5.972,5.972,0,0,1-5.9-5.9,5.812,5.812,0,0,1,4.214-5.562V5.056H18.54V7.079a5.972,5.972,0,0,1,4.214,5.562H19.383a2.528,2.528,0,1,0-5.056,0A2.592,2.592,0,0,0,16.855,15.169Z" fill="#4e0000"/>
+                        </g>
+                        <path id="Path_15" data-name="Path 15" d="M82.186,211.271c-4.9.3-11.337,5.2-17.548,8.008-7.613,3.443-19.464.671-19.466.671,1.827-.853,9.257-2.623,10.754-3.284,7.953-3.5,7.278-10.791,3.49-10.73-5,.08-7.941,1.313-17.927,2.674-7.569,1.03-16.52.653-20.813,2.293C14.614,213.218,4.853,228.79,4.853,228.79l15.095,14.627s9.343-9.2,13.89-9.2c10.359,0,10.778-.139,20.4-.658,4.091-.223,4.945-.387,7.286-1.18,12.469-4.216,25.857-15.442,26.1-16.791C88.194,212.458,84.772,211.11,82.186,211.271Z" transform="translate(-4.853 -169.702)" fill="#4e0000"/>
+                      </g>
+                    </svg>
                   </div>
+                  <div className="dashboard-info-text">
+                    <h6>Your Holdings</h6>
+                    <p>{balance} SHARTAN</p>
+                  </div>
+                </div>
               </Col>
               <Col sm="4">
                 <div className="dashboard-info-section text-center">
@@ -352,21 +376,62 @@ const App = () => {
                   </div>
                   <div className="dashboard-info-text">
                     <h6>Pending Rewards</h6>
-                    <p>{userDividendsDistributedAt}</p>
+                    <p>{pendingRewards} ETH </p>
                   </div>
                 </div>
               </Col>
             </Row>
-            <Row>
-              <Col sm="4">
+            <Row style={{
+                marginTop: '74px',
+                textAlign: 'center'
+              }}>
+              <Col sm="4" style={{
+                textAlign: 'center'
+              }}>
+                <Button 
+                  style={{
+                    background: '#fec863',
+                    fontSize:'25px',
+                    color: '#4e0000',
+                    borderRadius: '16px',
+                    height: '60px',
+                    gap: '16px',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onClick={buyShartan}
+                >
+                  Buy Shartan
+                </Button>
               </Col>
-              <Col sm="4">
+              <Col sm="4" style={{
+                textAlign: 'center'
+              }}>
                 <UnlockButton />
               </Col>
-              <Col sm="4">
+              <Col sm="4" style={{
+                textAlign: 'center'
+              }}>
+                <Button
+                  style={{
+                    background: '#fec863',
+                    fontSize:'25px',
+                    color: '#4e0000',
+                    borderRadius: '16px',
+                    height: '60px',
+                    gap: '16px',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onClick={getClaim}
+                >
+                  Claim Rewards
+                </Button>
               </Col>
             </Row>
-            <h4 className="text-center">Total ETH Paid To SHARTAN Holders
+            <h4 className="text-center" style={{marginTop: '66px'}}>Total ETH Paid To SHARTAN Holders
               <br/>{totalDividendsDistributed} ETH
               <br/>(${totalDividendsDistributedUSD})
             </h4>

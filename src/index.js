@@ -8,9 +8,8 @@ import reportWebVitals from './reportWebVitals';
 import "../src/assets/scss/style.scss";
 import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
 import { ModalProvider } from '@pantherswap-libs/uikit'
-import { ThemeProvider } from 'styled-components'
 import { Web3Provider } from '@ethersproject/providers'
-import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
+import { Web3ReactProvider } from '@web3-react/core'
 import { ThemeContextProvider } from './ThemeProvider'
 
 export default function getLibrary(provider) {
