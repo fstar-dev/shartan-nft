@@ -12,7 +12,7 @@ import 'aos/dist/aos.css';
 
 const App = () => {
   const { account, activate, deactivate } = useWeb3React()
-  const [show, setShow] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     AOS.init({
@@ -67,19 +67,25 @@ const App = () => {
     console.log('account = ', account)
 
     if (API.isAddress(account)) {
-      console.log("bbbbbbbb")
       setValidAddress(true);
-      getBalance('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a');            
-      getUserDividendsDistributed('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a');
-      getPendingRewards('0x85584a6d679d56e7016bdef2113aa6c6c8a5ea4a')
+      getBalance(account);
+      getUserDividendsDistributed(account);
+      getPendingRewards(account)
     }
     else {
       setValidAddress(false);
     }
   }, [account])
 
+  useEffect(()=>{
+    console.log('account = ', account)
+    if (errorMsg !== '') {
+      setTimeout(()=>setErrorMsg(''), 3000)
+    }
+    
+  }, [errorMsg])
   const getClaim = async () => {
-    let result = await API.cliamRewards(account, setShow);
+    let result = await API.cliamRewards(account, setErrorMsg);
 
   }
   const buyShartan = () => {
@@ -435,6 +441,9 @@ const App = () => {
               <br/>{totalDividendsDistributed} ETH
               <br/>(${totalDividendsDistributedUSD})
             </h4>
+            <span style={{color: 'red'}}>
+              {errorMsg}
+            </span>
           </Modal.Body>
         </Modal>
 				</>

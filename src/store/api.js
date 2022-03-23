@@ -72,7 +72,7 @@ export const cliamRewards = async(address,  setShow, library=null) => {
 		return result;
 	} catch (e) {
 		console.log(e);
-		setShow(true)
+		setShow(catchSmartContractErrorMessage(e))
 		createError(catchSmartContractErrorMessage(e));
 	}
 }
