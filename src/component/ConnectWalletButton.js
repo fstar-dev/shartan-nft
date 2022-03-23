@@ -53,7 +53,7 @@ const UnlockButton = props => {
           fillRule="evenodd" data-name="Path 25"/>
         </g>
       </svg>
-     { account? 'Disconnect' : 'Connect Wallet'} 
+     { account? 'Disconnect' : 'Connect'} 
     </Button>
   )
 }

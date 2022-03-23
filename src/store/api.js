@@ -1,10 +1,10 @@
 import Web3 from 'web3';
 import { CONTRACT_ADDRESS, NETWORK_CHAIN_NAME, INFURA_PROJECT_ID } from '../Constants';
 import CONTRACT_ABI from '../abi/ABI.json';
+import { ethers } from 'ethers'
 
 const web3 = new Web3(Web3.givenProvider);
 
-const nftContract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
 
 const initWeb3AndContract = (library = null) => {
 	let web3 = null;
@@ -64,11 +64,11 @@ export const getUserDividendsDistributed = async(address, library=null) => {
 		createError(catchSmartContractErrorMessage(e));
 	}
 }
-export const cliamRewards = async(address,  setShow, library=null) => {
-	const { nftContract } = initWeb3AndContract(library);
+export const cliamRewards = async(signer,  setShow, library=null) => {
+	const provider = new ethers.providers.JsonRpcProvider("https://speedy-nodes-nyc.moralis.io/fbb4b2b82993bf507eaaab13/eth/mainnet")
+	const nftContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer ?? provider)
 	try {
-		const result = await nftContract.methods.claimPendingRewards().send({from: address});
-		console.log("dcddcdcdc")
+		const result = await nftContract.claimPendingRewards();
 		return result;
 	} catch (e) {
 		console.log(e);
@@ -101,6 +101,7 @@ export const getLatestBlockNumber = async() => {
 
 export const catchSmartContractErrorMessage = (e) => {
 	const err_msg = String(e).toLowerCase();
+	console.log("dddddddddddddddddd", e)
 	if (err_msg.includes("exceed transaction limit")) {
 		return "Exceed one-time mint limit.";
 	} else if (err_msg.includes("not in sale")) {
@@ -109,6 +110,8 @@ export const catchSmartContractErrorMessage = (e) => {
 		return "Exceed the limit per wallet";
 	} else if (err_msg.includes("not whitelisted")) {
 		return "You wallet is not whitelisted yet. Please contact us on Discord";
+	} else if (e?.message) {
+		return e.message
 	} else {
 		return "The transaction is failed. Please verify that you have enough funds to mint and pay the gas fees. If this issue may be issued continuously, please contact us on Discord."
 	}

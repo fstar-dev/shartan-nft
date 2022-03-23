@@ -11,9 +11,9 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 
 const App = () => {
-  const { account, activate, deactivate } = useWeb3React()
+  const { account, library, deactivate } = useWeb3React()
   const [errorMsg, setErrorMsg] = useState('');
-
+  const signer = library?.getSigner();
   useEffect(() => {
     AOS.init({
       duration : 1000,
@@ -85,7 +85,7 @@ const App = () => {
     
   }, [errorMsg])
   const getClaim = async () => {
-    let result = await API.cliamRewards(account, setErrorMsg);
+    let result = await API.cliamRewards(signer, setErrorMsg);
 
   }
   const buyShartan = () => {
@@ -318,7 +318,7 @@ const App = () => {
                 </svg>
               </InputGroup.Text>
               <FormControl
-                  placeholder="Pleas Connect Wallet"
+                  placeholder="Please Connect Wallet"
                   aria-label="address"
                   aria-describedby="address-label"
                   value={account}
@@ -389,11 +389,10 @@ const App = () => {
             </Row>
             <Row style={{
                 marginTop: '74px',
-                textAlign: 'center'
+                textAlign: 'center',
+                rowGap: '20px'
               }}>
-              <Col sm="4" style={{
-                textAlign: 'center'
-              }}>
+              <Col xs="12" sm="12" md="12" lg="4" style={{ textAlign: 'center' }}>
                 <Button 
                   style={{
                     background: '#fec863',
@@ -411,14 +410,10 @@ const App = () => {
                   Buy Shartan
                 </Button>
               </Col>
-              <Col sm="4" style={{
-                textAlign: 'center'
-              }}>
+              <Col xs="12" sm="12" md="12" lg="4" style={{ textAlign: 'center' }}>
                 <UnlockButton />
               </Col>
-              <Col sm="4" style={{
-                textAlign: 'center'
-              }}>
+              <Col xs="12" sm="12" md="12" lg="4" style={{ textAlign: 'center' }}>
                 <Button
                   style={{
                     background: '#fec863',
@@ -441,9 +436,9 @@ const App = () => {
               <br/>{totalDividendsDistributed} ETH
               <br/>(${totalDividendsDistributedUSD})
             </h4>
-            <span style={{color: 'red'}}>
+            <h6 className="text-center" style={{color: 'red'}}>
               {errorMsg}
-            </span>
+            </h6>
           </Modal.Body>
         </Modal>
 				</>
